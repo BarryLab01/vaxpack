@@ -10,7 +10,7 @@ Introduction
 Extensive use of sequencing technology to solve population related
 biological problems demands efficient, and comphrehensive tools for data
 analyses. Different software packages for population genetics/genomics
-such as PopGenome, R package (Pfeifer, B. et al 2014) necessitate the
+such as PopGenome, R package (Pfeifer, B. *et al* 2014) necessitate the
 basic knowledge of command line tools. Programs with the graphical user
 interface such as DnaSP require extensive pre-processing and
 post-processing of the data. Here, **vaxpack** is a powerful
