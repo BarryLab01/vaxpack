@@ -1,4 +1,6 @@
 exportPattern("^[^\\.]")
+export(vaxpack_input)
+export(vaxpack_output)
 #
 import(ggplot2)
 import(plotly)
