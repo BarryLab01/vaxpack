@@ -1,0 +1,10 @@
+exportPattern("^[^\\.]")
+#
+import(ggplot2)
+importFrom(plotly,  plot_ly, layout)
+importFrom(magrittr, "%>%")
+importFrom(ape, as.DNAbin, dist.gene, nj, plot.phylo, tiplabels)
+importFrom(vegan, specaccum)
+importFrom(grDevices, colors)
+importFrom(graphics, legend, plot, title)
+importFrom(utils, View, read.table, write.table)

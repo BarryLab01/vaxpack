@@ -1,0 +1,33 @@
+Package: vaxpack
+Type: Package
+Title: Provide Fast Population Genetic Analysis For A Single Gene
+Version: 0.1.0
+Authors@R: as.person(c(
+    "Elijah Martin <1elijahmartin@gmail.com> [aut, cre]", 
+    "Myo Naung <naung.m@wehi.edu.au> [aut]"
+  ))
+Maintainer: Elijah Martin <1elijahmartin@gmail.com>, Myo Naung <naung.m@wehi.edu.au>
+Date: January
+Year: 2019
+Description: A package for quickly analysing the diversity
+    within a gene of a haploid organism, all in the same place.The input requires 
+    aligned .fasta files and receive population genetic statistics in no time.
+    The package is very easy to use relative to other R packages, and is intended 
+    for biologists with minimal command line based knowledge.The graphical output 
+    includes Tajima's D, Segregation Sites (S), and nucleotide diversity plots. You 
+    can customize your own minior allele frequency cut-off point, and sliding window
+    scales.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.1.0)
+Imports:
+    ggplot2,
+    plotly,
+    ape,
+    vegan,
+    magrittr,
+    grDevices,
+    graphics,
+    tibble
+    
