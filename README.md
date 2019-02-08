@@ -1,3 +1,7 @@
+# Vaxpack: Fast and Efficient Population Genetic Analysis Gadget
+Elijah Martin, Myo Naung
+January, 2019
+
 Introduction
 ------------
 
@@ -50,10 +54,7 @@ analyses of amino acid sequences.
 The input data has to be inside a folder similar to **readData()** from
 PopGenome package. If the analyses include more than one populations of
 the same gene/coding region, build different fasta files and put inside
-a folder. For example,
-
-![*The input folder shown here includes two .fasta files from two
-populations*](/Users/Myo/Desktop/test_vaxpack/vaxpack/Image_1%20for%20vaxpack.png)
+a folder. 
 
 **vaxpack\_input()** is an all in one function for conducting population
 genetic analyses. It uses a prompt/response method for input, and needs
