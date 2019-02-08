@@ -3,6 +3,7 @@ title: 'Vaxpack: Fast and Efficient Population Genetic Analysis Gadget'
 author: "Elijah Martin, Myo Naung"
 date: "January, 2019"
 output:
+  md_document: default
   html_document: default
   word_document: default
 ---
