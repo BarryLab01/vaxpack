@@ -37,9 +37,9 @@ the packagename. vaxpack is built for R (&gt;= 3.1.0). See more about
 helpful ways to install R packages from Github
 [here](https://cran.r-project.org/web/packages/githubinstall/vignettes/githubinstall.html).
 
-    install.packages("githubinstall")
-    library(githubinstall)
-    githubinstall("vaxpack")
+    install.packages("devtools")
+    library(devtools)
+    install_github("BarryLab01/vaxpack")
     library(vaxpack)
 
 Loading Data
