@@ -269,8 +269,9 @@ vaxpack_output <- function () {
     min.var.plot.data[ ,3] <- as.numeric(as.character(value.column[ ,-1]))
     min.var.plot.data[is.na(min.var.plot.data)] <- 0
     colnames(min.var.plot.data) <- c("codons", "variable", "value")
+    min.var.plot.data$codons = factor(min.var.plot.data$codons, levels = unique(min.var.plot.data$codons))
     vp.AA.Variant.Graph <<- ggplot(data = min.var.plot.data,
-                                      aes(x = as.factor(min.var.plot.data$codons),
+                                      aes(x = min.var.plot.data$codons,
                                           y = min.var.plot.data$value)) +
       geom_bar(aes( fill = min.var.plot.data$variable), stat = 'identity')+
       scale_fill_brewer(palette="Set1",
