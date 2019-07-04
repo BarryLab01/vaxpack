@@ -282,7 +282,7 @@ vaxpack_output <- function () {
                                   (4*vp.SEQ.NUM/10), (vp.SEQ.NUM/2), (6*vp.SEQ.NUM/10),
                                   (7*vp.SEQ.NUM/10), (8*vp.SEQ.NUM/10), (9*vp.SEQ.NUM/10), vp.SEQ.NUM),
                        labels = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100))+
-      theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+      theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90))
     cat("\n")
     cat("Saved as \"vp.AA.Variant.Graph\"\n")
     return(vp.AA.Variant.Graph)}
