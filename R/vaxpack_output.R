@@ -443,19 +443,19 @@ vaxpack_output <- function () {
 
 
     vp.S.Graph <<- ggplot(data = sliding.window.S,
-                          aes(y = sliding.window.S$V1, x = 1:number.of.windows))+
+                          aes(y = sliding.window.S$V1, x = 1:number.of.windows), na.rm=TRUE)+
       geom_line(colour = "Gold")+
       geom_area(fill = "Yellow")+
       theme_classic()+
       scale_x_continuous(breaks = xlabels.values,
-                         limits = c(0, label.jump*6/label.scaler),
+                         limits = c(0, (label.jump+50)*6/label.scaler),
                          labels = xlabels)+
       labs(subtitle = vp.GENE.NAME, y = "S", x = "Nucleotide", title = "Polymorphic Sites")+
       theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
     cat("\n")
     cat("\n")
     cat("Saved as \"vp.S.Graph\"\n")
-    return(vp.S.Graph)
+    return(suppressMessages(vp.S.Graph))
   }
 
   #TAJIMA'S D GRAPH---------------------------------------------------------------------------
@@ -503,13 +503,13 @@ vaxpack_output <- function () {
     }
     if (vp.SEQ.NUM >= 1000) td.sim.for.count <- vp.TD.SIM[73, ]
 
-    vp.TD.Graph <<- ggplot(data = sliding.window.TD,
-                           aes(y = sliding.window.TD$V1, x = 1:number.of.windows))+
+    vp.TD.Graph <<- suppressMessages(ggplot(data = sliding.window.TD,
+                           aes(y = sliding.window.TD$V1, x = 1:number.of.windows), na.rm=TRUE)+
       geom_line(colour = "DarkRed")+
       geom_area(fill = "Red")+
       theme_classic()+
       scale_x_continuous(breaks = xlabels.values,
-                         limits = c(0, label.jump*6/label.scaler),
+                         limits = c(0, (label.jump+50)*6/label.scaler),
                          labels = xlabels)+
       scale_y_continuous(sec.axis = sec_axis(~.+0, breaks = (td.sim.for.count[2:9]),
                                              labels = c("0.1", "0.1",
@@ -520,10 +520,10 @@ vaxpack_output <- function () {
       geom_hline(yintercept = (td.sim.for.count[2:9]),
                  colour = "DarkRed", linetype = "dashed", size = 0.4)+
       labs(subtitle = vp.GENE.NAME, y = "Tajima's D", x = "Nucleotide", title = "Tajima's D")+
-      theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+      theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)))
     cat("\n")
     cat("Saved as \"vp.TD.Graph\"\n")
-    return(vp.TD.Graph)
+    return(suppressMessages(vp.TD.Graph))
   }
 
   #NUCLEOTIDE DIVERSITY GRAPH-----------------------------------------------------------------------
@@ -561,18 +561,18 @@ vaxpack_output <- function () {
     sliding.window.pi[is.na(sliding.window.pi)] <- 0
 
     vp.pi.Graph <<- ggplot(data = sliding.window.pi,
-                           aes(y = sliding.window.pi$V1, x = 1:number.of.windows))+
+                           aes(y = sliding.window.pi$V1, x = 1:number.of.windows), na.rm=TRUE)+
       geom_line(colour = "DarkBlue")+
       geom_area(fill = "Blue")+
       theme_classic()+
       scale_x_continuous(breaks = xlabels.values,
-                         limits = c(0, label.jump*6/label.scaler),
+                         limits = c(0, (label.jump +50) *6/label.scaler),
                          labels = xlabels)+
       labs(subtitle = vp.GENE.NAME, y = "\u03a0", x = "Nucleotide", title = "Nucleotide Diversity")+
       theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
     cat("\n")
     cat("Saved as \"vp.pi.Graph\"\n")
-    return(vp.pi.Graph)
+    return(suppressMessages(vp.pi.Graph))
   }
 
   #ALL SLIDING SCALES-------------------------------------------------------------------------------------
@@ -662,7 +662,7 @@ vaxpack_output <- function () {
                                                aes(x = stacked.sliding.window.stats$window,
                                                    y = stacked.sliding.window.stats$value,
                                                    col = stacked.sliding.window.stats$variable,
-                                                   fill = stacked.sliding.window.stats$variable))+
+                                                   fill = stacked.sliding.window.stats$variable), na.rm=TRUE)+
       geom_line(size = 0.7)+
       geom_area(alpha = 0.6, position = 'identity')+
       theme_classic()+
@@ -670,7 +670,7 @@ vaxpack_output <- function () {
            x = "Nucleotide", title = paste("Statistics Across", vp.GENE.NAME, "Scaled To TD"))+
       theme(plot.title = element_text(hjust = 0.5))+
       scale_x_continuous(breaks = xlabels.values,
-                         limits = c(0, label.jump*6/label.scaler),
+                         limits = c(0, (label.jump+50)*6/label.scaler),
                          labels = xlabels)+
       scale_y_continuous(breaks = c(min(stacked.sliding.window.stats$value),
                                     -2*TD.scaler, 0, 2*TD.scaler,
@@ -695,7 +695,7 @@ vaxpack_output <- function () {
     cat("simulation of beta distribution by F. Tajima (1989)\n")
     cat("\n")
     cat("Saved as \"vp.Combined.Pop.Gen.Stats.Graph\"\n")
-    return(vp.Combined.Pop.Gen.Stats.Graph)
+    return(suppressMessages(vp.Combined.Pop.Gen.Stats.Graph))
   }
 
   #SLIDING SCALE DATA TABLE---------------------------------------------------------------------
@@ -786,3 +786,6 @@ vaxpack_output <- function () {
   cat("e.g. write.csv(vp.Sliding.Window.Stats, file = \"my.sliding.window.stats.in.excel\")")
   }
 }
+
+
+
