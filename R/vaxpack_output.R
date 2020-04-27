@@ -443,7 +443,7 @@ vaxpack_output <- function () {
 
 
     vp.S.Graph <<- ggplot(data = sliding.window.S,
-                          aes(y = sliding.window.S$V1, x = 1:number.of.windows), na.rm=TRUE)+
+                          aes(y = V1, x = 1:number.of.windows), na.rm=TRUE)+
       geom_line(colour = "Gold")+
       geom_area(fill = "Yellow")+
       theme_classic()+
@@ -504,7 +504,7 @@ vaxpack_output <- function () {
     if (vp.SEQ.NUM >= 1000) td.sim.for.count <- vp.TD.SIM[73, ]
 
     vp.TD.Graph <<- suppressMessages(ggplot(data = sliding.window.TD,
-                           aes(y = sliding.window.TD$V1, x = 1:number.of.windows), na.rm=TRUE)+
+                           aes(y = V1, x = 1:number.of.windows), na.rm=TRUE)+
       geom_line(colour = "DarkRed")+
       geom_area(fill = "Red")+
       theme_classic()+
@@ -561,7 +561,7 @@ vaxpack_output <- function () {
     sliding.window.pi[is.na(sliding.window.pi)] <- 0
 
     vp.pi.Graph <<- ggplot(data = sliding.window.pi,
-                           aes(y = sliding.window.pi$V1, x = 1:number.of.windows), na.rm=TRUE)+
+                           aes(y = V1, x = 1:number.of.windows), na.rm=TRUE)+
       geom_line(colour = "DarkBlue")+
       geom_area(fill = "Blue")+
       theme_classic()+
@@ -659,10 +659,10 @@ vaxpack_output <- function () {
     if (vp.SEQ.NUM >= 1000) td.sim.for.count <- vp.TD.SIM[73, ]
 
     vp.Combined.Pop.Gen.Stats.Graph <<- ggplot(stacked.sliding.window.stats,
-                                               aes(x = stacked.sliding.window.stats$window,
-                                                   y = stacked.sliding.window.stats$value,
-                                                   col = stacked.sliding.window.stats$variable,
-                                                   fill = stacked.sliding.window.stats$variable), na.rm=TRUE)+
+                                               aes(x = window,
+                                                   y = value,
+                                                   col = variable,
+                                                   fill = variable), na.rm=TRUE)+
       geom_line(size = 0.7)+
       geom_area(alpha = 0.6, position = 'identity')+
       theme_classic()+
@@ -786,6 +786,3 @@ vaxpack_output <- function () {
   cat("e.g. write.csv(vp.Sliding.Window.Stats, file = \"my.sliding.window.stats.in.excel\")")
   }
 }
-
-
-
