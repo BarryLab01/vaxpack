@@ -41,6 +41,7 @@ helpful ways to install R packages from Github
     library(devtools)
     install_github("BarryLab01/vaxpack")
     library(vaxpack)
+    library(ggplot2)
 
 Loading Data
 ------------
