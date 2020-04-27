@@ -427,6 +427,7 @@ vaxpack_output <- function () {
     }
     xlabels <- paste(xlabels.values)
     xlabels.values <- xlabels.values / label.scaler
+     xlabels.values <- seq(from = xlabels.values[1], to = xlabels.values[6], by = xlabels.values[1])
 
     for (i in 1:number.of.windows){
       snps <- vp.GLOBAL.SNPS[windowstart:windowend]
@@ -475,6 +476,7 @@ vaxpack_output <- function () {
     }
     xlabels <- paste(xlabels.values)
     xlabels.values <- xlabels.values / label.scaler
+    xlabels.values <- seq(from = xlabels.values[1], to = xlabels.values[6], by = xlabels.values[1])
 
     for (i in 1:number.of.windows){
       snps <- vp.GLOBAL.SNPS[windowstart:windowend]
@@ -543,6 +545,7 @@ vaxpack_output <- function () {
     }
     xlabels <- paste(xlabels.values)
     xlabels.values <- xlabels.values / label.scaler
+    xlabels.values <- seq(from = xlabels.values[1], to = xlabels.values[6], by = xlabels.values[1])
 
     for (i in 1:number.of.windows){
       snps <- vp.GLOBAL.SNPS[windowstart:windowend]
@@ -592,6 +595,7 @@ vaxpack_output <- function () {
     }
     xlabels <- paste(xlabels.values)
     xlabels.values <- xlabels.values / label.scaler
+    xlabels.values <- seq(from = xlabels.values[1], to = xlabels.values[6], by = xlabels.values[1])
 
     for (i in 1:number.of.windows){
       snps <- vp.GLOBAL.SNPS[windowstart:windowend]
