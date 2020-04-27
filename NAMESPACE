@@ -1,12 +1,11 @@
 exportPattern("^[^\\.]")
-export(vaxpack_input)
-export(vaxpack_output)
 #
 import(ggplot2)
 import(plotly)
-import(tibble)
-importFrom(ape, as.DNAbin, dist.gene, nj, plot.phylo, tiplabels)
-importFrom(vegan, specaccum)
-importFrom(grDevices, colors)
-importFrom(graphics, legend, plot, title)
+import(magrittr)
+importFrom(ape)
+importFrom(vegan)
+importFrom(grDevices)
+importFrom(graphics)
+importFrom(utils)
 
