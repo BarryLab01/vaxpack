@@ -1,6 +1,5 @@
 vaxpack_input <- function () {
-  cat ("The following analyses are intended for haploid organisms such as Plasmodium")
-  cat ("\n")
+
   cat ("For this function to work you will need:\n")
   cat ("1 - A folder containing all files to be analysed\n")
   cat ("     These need to be aligned, the same length, and with no gaps! (e.g. with MEGA)\n")
@@ -40,32 +39,46 @@ vaxpack_input <- function () {
   genename <- readline (" What is the name of the gene you're analysing? <- ")
   cat (" \n")
 
+  cat (" \n")
+  cat (" What is the ploidy of your gene?\n")
+  cat (" 1 - Haploid\n")
+  cat (" 2 - Diploid\n")
+  cat (" 3 - Triploid\n")
+  cat (" 4 - Tetraploid\n")
+  cat (" 5 - Pentapoid\n")
 
+  ploidycount <- readline (" My gene's ploidy <- ")
+  ploidycount <- as.numeric(ploidycount)
+  if (ploidycount == 1) ploidycount <- 1
+  if (ploidycount == 2) ploidycount <- 4
+  if (ploidycount == 3) ploidycount <- 8
+  if (ploidycount == 4) ploidycount <- 16
+  if (ploidycount == 5) ploidycount <- 32
 
 
   #vaxpack
-  #---------------------------------------------------------------------------------------------------
+  #Starting the timer---------------------------------------------------------------------------------
   st <- Sys.time()
-  # processing of fasta files ---------------------------------------------------------------------------------------------------
+  #Counting the number of files, setting up results table---------------------------------------------
   fasta.locs <- list.files(path, full.names = TRUE)
   fasta.names <- gsub("\\.[aA-zZ]*", "", list.files(path))
-  fasta.num <- length(fasta.locs) #number of files inside folder
+  fasta.num <- length(fasta.locs)
 
   cat (" Completing Step: 1 of", (fasta.num * 7) + 16, "\r")
-  # building matrix for result table : option-1 --------------------
+
   ndrt <- matrix(nrow = fasta.num + 1, ncol = 11)
   rownames(ndrt) <- c(fasta.names, "Total")
-  colnames(ndrt) <- c("n", "Seq. Length", "Invalid Sites", "Seg. sites (S)", "SNPS", "\u03a0 x 10^-3", "TD",
+  colnames(ndrt) <- c("n", "Seq. Length", "Invalid Sites", "Seg. sites", "SNPS", "\u03a0 x 10^3", "TD",
                       "NS", "SP", "nuc. h", "nuc. Hd")
 
-  # prepare for ref to input comparison (consider everything as string)---------------------------------------------------------------------------------------------------
+  #Setting up reference as a matrix-------------------------------------------------------------------
   cat (" Completing Step: 2 of", (fasta.num * 7) + 16, "\r")
   ref.string <- toupper(as.matrix(paste(readLines(ref)[-1], collapse = "")))
-  seq.length <- sum(nchar(ref.string)) #length of ref
-  ref.matrix <- matrix(nrow = 1, ncol = seq.length) #set ref seq to compare with input fasta as string, each base become a column
-  totalpop <- matrix(ncol = seq.length) #make a matrix table
-  for (i in 1:seq.length){ref.matrix[1,i] <- substr(ref.string, i, i)} #substr — Return part of a string
-  # build the table for AA convsersion--------------------------------------------------------------------------------------------------
+  seq.length <- sum(nchar(ref.string))
+  ref.matrix <- matrix(nrow = 1, ncol = seq.length)
+  totalpop <- matrix(ncol = seq.length)
+  for (i in 1:seq.length){ref.matrix[1,i] <- substr(ref.string, i, i)}
+  #Making amino acid converter------------------------------------------------------------------------
   cat (" Completing Step: 3 of", (fasta.num * 7) + 16, "\r")
   aalookup <-matrix(c("ATT", "I", "ATC", "I", "ATA", "I",
                       "CTT", "L", "CTC", "L", "CTA", "L", "CTG", "L", "TTA", "L", "TTG","L",
@@ -88,26 +101,26 @@ vaxpack_input <- function () {
                       "AAA", "K", "AAG", "K",
                       "CGT", "R", "CGC", "R", "CGA", "R", "CGG", "R", "AGA", "R", "AGG", "R",
                       "TAA", "STOP", "TAG", "STOP", "TGA", "STOP"), nrow = 64, ncol = 2, byrow = TRUE)
-  #---------------------------------------------------------------------------------------------------
+  #Starting loop / checking length of sequences---------------------------------------------------------
   loop.count <- 1
   invalid.site.counter.total <- 0
   for (i in 1:fasta.num){
-    cat (" Completing Step:", loop.count + 3, "of", (fasta.num * 7) + 16, "\r") #keep track
-    onepop <- toupper(as.matrix(readLines(fasta.locs[i])[c(FALSE, TRUE)])) #reading input fasta
-    rownames(onepop) <- readLines(fasta.locs[i])[c(TRUE, FALSE)] #sample ID
-    seq.count <- nrow(onepop) #number of seq inside aligned fasta
+    cat (" Completing Step:", loop.count + 3, "of", (fasta.num * 7) + 16, "\r")
+    onepop <- toupper(as.matrix(readLines(fasta.locs[i])[c(FALSE, TRUE)]))
+    rownames(onepop) <- readLines(fasta.locs[i])[c(TRUE, FALSE)]
+    seq.count <- nrow(onepop)
     if (length(unique(nchar(onepop))) != 1)
       stop("All sequences must be the same length!")
     if ((unique(nchar(onepop))) != seq.length)
-      stop("Reference is not the same length as your sequences!") #quality control
-    #---------------------------------------------------------------------------------------------------
+      stop("Reference is not the same length as your sequences!")
+    #Splitting sequences from each file into matrix format-----------------------------------------------
     cat (" Completing Step:", loop.count + 4, "of", (fasta.num * 7) + 16, "\r")
     invalid.site.counter <- 0
     if (seq.count > 1){
-      wholegene <- matrix(nrow = seq.count, ncol = seq.length) #set matrix
+      wholegene <- matrix(nrow = seq.count, ncol = seq.length)
       n.change.matrix <- wholegene
       for (j in 1:seq.count){
-        splitgene <- strsplit(onepop[j,1], split = "")[[1]] #split base from fasta for each sample
+        splitgene <- strsplit(onepop[j,1], split = "")[[1]]
         for (k in 1:seq.length){
           if (splitgene[k] %in% c("A", "T", "C", "G", "a", "t", "c", "g") == TRUE)
             wholegene[j,k] <- splitgene[k]
@@ -115,8 +128,8 @@ vaxpack_input <- function () {
             {wholegene[j,k] <- ref.matrix[1,k]
             invalid.site.counter <- invalid.site.counter + 1}
         }
-      }#differentiate between valid and ambigious sites(count, and set as ref)
-    #---------------------------------------------------------------------------------------------------
+      }
+    #Comparing all rows for SNPs---------------------------------------------------------------------
       cat (" Completing Step:", loop.count + 5, "of", (fasta.num * 7) + 16, "\r")
       for (j in 1:(seq.count-1)){
         n.change.matrix[j,] <- colSums(sweep(wholegene[(j):(seq.count),], 2, wholegene[(j),], FUN = `!=`,
@@ -129,55 +142,82 @@ vaxpack_input <- function () {
         if (snps[j] != 0) {seg.sites <- cbind(seg.sites, as.matrix(paste(j)))}
       }
       seg.sites <- as.numeric(seg.sites[,-1])
-      seg.sites.num <- length(seg.sites) #count number of seg sites i.e sites different from ref including SP, NS
-      #set SPs, and NPs changes and collect the positions using AA table above--------------------------------------------------------------------------------------------------
+      seg.sites.num <- length(seg.sites)
+  #Counting synonomous and non-synonomous snps-----------------------------------------------------
       cat (" Completing Step:", loop.count + 6, "of", (fasta.num * 7) + 16, "\r")
-      snp.count <- 0
-      syn.count <- 0
-      nsyn.count <- 0
+      single.snp.count <- 0
+      single.syn.count <- 0
+      single.nsyn.count <- 0
       for (j in 1:seg.sites.num){
         snp.site <- seg.sites[j]
-        if (seg.sites[j] %% 3 == 1){possible.AA.number <- length(
-          unique(aalookup[match(unique(paste(wholegene[ ,snp.site],
-                                             ref.matrix[ ,snp.site+1],
-                                             ref.matrix[ ,snp.site+2], sep = "")), aalookup),2] ))} #remainder of seg sites divided by 3
+        
+        if (snp.site %% 3 == 1){
+          refAA <- aalookup[match(paste(ref.matrix[ ,snp.site],
+                                            ref.matrix[ ,snp.site+1],
+                                            ref.matrix[ ,snp.site+2], sep = ""), aalookup),2]
+          
+          possible.AA.number <- length(
+            unique(c(aalookup[match(unique(paste(
+              wholegene[ ,snp.site],
+              ref.matrix[ ,snp.site+1],
+              ref.matrix[ ,snp.site+2], sep = "")), aalookup),2],
+              refAA)))
+          }
 
-        if (seg.sites[j] %% 3 == 2){possible.AA.number <- length(
-          unique(aalookup[match(unique(paste(ref.matrix[ ,snp.site-1],
-                                             wholegene[ ,snp.site],
-                                             ref.matrix[ ,snp.site+1], sep = "")), aalookup),2] ))}
+        if (snp.site %% 3 == 2){
+          refAA <- aalookup[match(paste(ref.matrix[ ,snp.site-1],
+                                            ref.matrix[ ,snp.site],
+                                            ref.matrix[ ,snp.site+1], sep = ""), aalookup),2]
+          
+          possible.AA.number <- length(
+            unique(c(aalookup[match(unique(paste(
+              ref.matrix[ ,snp.site-1],
+              wholegene[ ,snp.site],
+              ref.matrix[ ,snp.site+1], sep = "")), aalookup),2],
+              refAA)))
+          }
 
-        if (seg.sites[j] %% 3 == 0){possible.AA.number <- length(
-          unique(aalookup[match(unique(paste(ref.matrix[ ,snp.site-2],
-                                             ref.matrix[ ,snp.site-1],
-                                             wholegene[ ,snp.site], sep = "")), aalookup),2] ))}
-        possible.nuc.number <- length(unique(wholegene[ ,seg.sites[j]]))
-        snp.count  <- snp.count  + (possible.nuc.number - 1)
-        nsyn.count <- nsyn.count + (possible.AA.number  - 1)
-        syn.count  <- syn.count  + (possible.nuc.number - possible.AA.number)
+        if (snp.site %% 3 == 0){
+          refAA <- aalookup[match(paste(ref.matrix[ ,snp.site-2],
+                                            ref.matrix[ ,snp.site-1],
+                                            ref.matrix[ ,snp.site], sep = ""), aalookup),2]
+          
+          possible.AA.number <- length(
+            unique(c(aalookup[match(unique(paste(
+              ref.matrix[ ,snp.site-2],
+              ref.matrix[ ,snp.site-1],
+              wholegene[ ,snp.site], sep = "")), aalookup),2],
+              refAA)))
+        }
+        
+        possible.nuc.number <- length(unique(c(wholegene[,snp.site], ref.matrix[,snp.site])))
+        
+        single.snp.count  <- single.snp.count  + (possible.nuc.number - 1)
+        single.nsyn.count <- single.nsyn.count + (possible.AA.number  - 1)
+        single.syn.count  <- single.syn.count  + (possible.nuc.number - possible.AA.number)
+
       }
-    #---------------------------------------------------------------------------------------------------
+    #Counting haplotypes--------------------------------------------------------------------------------
       cat (" Completing Step:", loop.count + 7, "of", (fasta.num * 7) + 16, "\r")
-      hap.nucs <- unique(onepop[ ,1]) #unqiue string = hap
-      hap.count <- length(hap.nucs) #number of hap
-      hap.lookup <- cbind(hap.nucs, c(1:hap.count)) #give the number to each hap for hap ranking
-      hap.table <- match(onepop[ ,1], hap.lookup) #gave each sample to respective assigned hap number
-      hap.freq <- matrix(ncol = 2, nrow = hap.count) #built matrix according number of hap
+      hap.nucs <- unique(onepop[ ,1])
+      hap.count <- length(hap.nucs)
+      hap.lookup <- cbind(hap.nucs, c(1:hap.count))
+      hap.table <- match(onepop[ ,1], hap.lookup)
+      hap.freq <- matrix(ncol = 2, nrow = hap.count)
       hap.freq[ ,1] <- c(1:hap.count)
       for (j in 1:hap.count){
         n.hap.counter <- 0
         for (k in 1:seq.count){
           if (hap.table[k] == j) {n.hap.counter <- n.hap.counter + 1}
         }
-        hap.freq[j,2] <- n.hap.counter #put freq for each assigned hap
+        hap.freq[j,2] <- n.hap.counter
       }
-     Hd <- (seq.count/(seq.count-1)) * (1-(sum(((hap.freq[,2])/seq.count)^2))) #hap diversity overall
-    #---------------------------------------------------------------------------------------------------
+     Hd <- (seq.count/(seq.count-1)) * (1-(sum(((hap.freq[,2])/seq.count)^2)))
+    #Calculating nucleotide diversity, Tajima's D--------------------------------------------------------
       cat (" Completing Step:", loop.count + 8, "of", (fasta.num * 7) + 16, "\r")
-      pi.per.nuc <- ((colSums(n.change.matrix) /  (seq.count)^2) / seq.length) * (seq.count/(seq.count-1)) #pi for each base
+      pi.per.nuc <- ((colSums(n.change.matrix) /  (seq.count)^2) / seq.length) * (seq.count/(seq.count-1))
       tpi <- sum(colSums(n.change.matrix)) /  (seq.count) / seq.count  * (seq.count/(seq.count-1))
-      pi <- sum(pi.per.nuc) #average pi (Nei method)
-      #tajima's D equation_step by step calculation
+      pi <- sum(pi.per.nuc)
       aone <- 0
       for (j in 1:(seq.count-1)){aone <- aone + 1/j}
       atwo <- 0
@@ -190,20 +230,20 @@ vaxpack_input <- function () {
       etwo <- ctwo / ((aone^2) + atwo)
       td <- ((tpi) -  (seg.sites.num / aone)) /
         (sqrt(  (eone*seg.sites.num)  + ( (etwo*seg.sites.num) * (seg.sites.num-1) ) ))
-    # puting result to table---------------------------------------------------------------------------------------------------
+    #Entering Table--------------------------------------------------------------------------------------
       cat (" Completing Step:", loop.count + 9, "of", (fasta.num * 7) + 16, "\r")
       ndrt[i,1]  <- seq.count
       ndrt[i,2]  <- seq.length
       ndrt[i,3]  <- invalid.site.counter
       ndrt[i,4]  <- seg.sites.num
-      ndrt[i,5]  <- snp.count
+      ndrt[i,5]  <- single.snp.count
       ndrt[i,6]  <- round(pi*1000, 3)
       ndrt[i,7]  <- round(td, 3)
-      ndrt[i,8]  <- nsyn.count
-      ndrt[i,9]  <- syn.count
+      ndrt[i,8]  <- single.nsyn.count
+      ndrt[i,9]  <- single.syn.count
       ndrt[i,10]  <- hap.count
       ndrt[i,11] <- round(Hd, 3)}
-    #---------------------------------------------------------------------------------------------------
+    #Table in case of only one sequence (no comparisons)------------------------------------------------
     if (seq.count == 1){
       ndrt[i,1]  <- seq.count
       ndrt[i,2]  <- seq.length
@@ -217,15 +257,18 @@ vaxpack_input <- function () {
       ndrt[i,10] <- 1
       ndrt[i,11] <- 0
     }
+    
+    #Still inside loop, gathering sequences from each loop as totalpop---------------------------------
     totalpop <- rbind(totalpop, wholegene)
     loop.count <- loop.count + 7
     invalid.site.counter.total <- invalid.site.counter.total + invalid.site.counter
   }
+  #Outside loop now, removing reference from top row--------------------------------------------------
   totalpop <- totalpop[-1,]
   seq.count <- dim(totalpop)[1]
   seq.length <- dim(totalpop)[2]
-  #---------------------------------------------------------------------------------------------------
-  cat (" Completing Step:", (fasta.num * 7) + 4, "of", (fasta.num * 7) + 16, "\r") #pi equation
+  #Recalculating SNPs from whole data set-----------------------------------------------------------
+  cat (" Completing Step:", (fasta.num * 7) + 4, "of", (fasta.num * 7) + 16, "\r")
   n.change.matrix <- matrix(nrow = seq.count, ncol = seq.length)
   for (j in 1:(seq.count-1)){
     n.change.matrix[j,] <- colSums(sweep(totalpop[(j):(seq.count),], 2, totalpop[(j),], FUN = `!=`,
@@ -236,56 +279,72 @@ vaxpack_input <- function () {
   seg.sites <- matrix()
   for (j in 1:seq.length){
     if (snps[j] != 0) {seg.sites <- cbind(seg.sites, as.matrix(paste(j)))}
-  } #getting position for segregation sites on nucleotide scales
+  }
   seg.sites <- as.numeric(seg.sites[,-1])
   seg.sites.num <- length(seg.sites)
   seg.codons <- unique(ceiling(seg.sites/3))
   seg.codons.num <- length(seg.codons)
   globalsnps <- snps
-  #---------------------------------------------------------------------------------------------------
+  #SNPs for all sequences-------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 5, "of", (fasta.num * 7) + 16, "\r")
-  snp.count <- 0
-  syn.count <- 0
-  nsyn.count <- 0
+  total.snp.count <- 0
+  total.syn.count <- 0
+  total.nsyn.count <- 0
   for (j in 1:seg.sites.num){
     snp.site <- seg.sites[j]
-    if (seg.sites[j] %% 3 == 1){possible.AA <- aalookup[match(paste(totalpop[ ,snp.site],
-                                                                    ref.matrix[ ,snp.site+1],
-                                                                    ref.matrix[ ,snp.site+2], sep = ""), aalookup),2]
-    refAA <- aalookup[match(paste(ref.matrix[ ,snp.site],
-                                  ref.matrix[ ,snp.site+1],
-                                  ref.matrix[ ,snp.site+2], sep = ""), aalookup),2]
-
-    possible.AA.number <- length(unique(possible.AA))
-    if (refAA %in% possible.AA == FALSE) possible.AA.number <- possible.AA.number + 1}
-    if (seg.sites[j] %% 3 == 2){possible.AA <- aalookup[match(paste(ref.matrix[ ,snp.site-1],
-                                                                    totalpop[ ,snp.site],
-                                                                    ref.matrix[ ,snp.site+1], sep = ""), aalookup),2]
-    refAA <- aalookup[match(paste(ref.matrix[ ,snp.site-1],
-                                  ref.matrix[ ,snp.site],
-                                  ref.matrix[ ,snp.site+1], sep = ""), aalookup),2]
-    possible.AA.number <- length(unique(possible.AA))
-    if (refAA %in% possible.AA == FALSE) possible.AA.number <- possible.AA.number + 1}
-    if (seg.sites[j] %% 3 == 0){possible.AA <- aalookup[match(paste(ref.matrix[ ,snp.site-2],
-                                                                    ref.matrix[ ,snp.site-1],
-                                                                    totalpop[ ,snp.site], sep = ""), aalookup),2]
-    refAA <- aalookup[match(paste(ref.matrix[ ,snp.site-2],
-                                  ref.matrix[ ,snp.site-1],
-                                  ref.matrix[ ,snp.site], sep = ""), aalookup),2]
-    possible.AA.number <- length(unique(possible.AA))
-    if (refAA %in% possible.AA == FALSE) possible.AA.number <- possible.AA.number + 1}
-    possible.nuc.number <- length(unique(totalpop[ ,seg.sites[j]]))
-    snp.count  <- snp.count  + (possible.nuc.number - 1)
-    nsyn.count <- nsyn.count + (possible.AA.number  - 1)
-    syn.count  <- syn.count  + (possible.nuc.number - possible.AA.number)
+    
+    if (snp.site %% 3 == 1){
+      refAA <- aalookup[match(paste(ref.matrix[ ,snp.site],
+                                    ref.matrix[ ,snp.site+1],
+                                    ref.matrix[ ,snp.site+2], sep = ""), aalookup),2]
+      
+      possible.AA.number <- length(
+        unique(c(aalookup[match(unique(paste(
+          totalpop[ ,snp.site],
+          ref.matrix[ ,snp.site+1],
+          ref.matrix[ ,snp.site+2], sep = "")), aalookup),2],
+          refAA)))
+    }
+    
+    if (snp.site %% 3 == 2){
+      refAA <- aalookup[match(paste(ref.matrix[ ,snp.site-1],
+                                    ref.matrix[ ,snp.site],
+                                    ref.matrix[ ,snp.site+1], sep = ""), aalookup),2]
+      
+      possible.AA.number <- length(
+        unique(c(aalookup[match(unique(paste(
+          ref.matrix[ ,snp.site-1],
+          totalpop[ ,snp.site],
+          ref.matrix[ ,snp.site+1], sep = "")), aalookup),2],
+          refAA)))
+    }
+    
+    if (snp.site %% 3 == 0){
+      refAA <- aalookup[match(paste(ref.matrix[ ,snp.site-2],
+                                    ref.matrix[ ,snp.site-1],
+                                    ref.matrix[ ,snp.site], sep = ""), aalookup),2]
+      
+      possible.AA.number <- length(
+        unique(c(aalookup[match(unique(paste(
+          ref.matrix[ ,snp.site-2],
+          ref.matrix[ ,snp.site-1],
+          totalpop[ ,snp.site], sep = "")), aalookup),2],
+          refAA)))
+    }
+    
+    possible.nuc.number <- length(unique(c(totalpop[,snp.site], ref.matrix[,snp.site])))
+    
+    total.snp.count  <- total.snp.count  + (possible.nuc.number - 1)
+    total.nsyn.count <- total.nsyn.count + (possible.AA.number  - 1)
+    total.syn.count  <- total.syn.count  + (possible.nuc.number - possible.AA.number)
   }
-  #---------------------------------------------------------------------------------------------------
+  #Total haplotypes--------------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 6, "of", (fasta.num * 7) + 16, "\r")
   tot.pop.string <- matrix(nrow = seq.count)
   for (i in 1:seq.count){tot.pop.string[i,1] <- paste(totalpop[i,], collapse = "")}
   hap.nucs <- unique(tot.pop.string[ ,1])
-  hap.count <- length(hap.nucs) #hap based on nucleotide
-  #---------------------------------------------------------------------------------------------------
+  hap.count <- length(hap.nucs)
+  #Total Haplotype diversity-------------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 7, "of", (fasta.num * 7) + 16, "\r")
   hap.lookup <- cbind(hap.nucs, c(1:hap.count))
   hap.table <- match(tot.pop.string[ ,1], hap.lookup)
@@ -296,8 +355,8 @@ vaxpack_input <- function () {
     for (k in 1:seq.count){
       if (hap.table[k] == j) {n.hap.counter <- n.hap.counter + 1}}
     hap.freq[j,2] <- n.hap.counter}
-  Hd <- (seq.count/(seq.count-1)) * (1-(sum(((hap.freq[,2])/seq.count)^2))) #total HD inside folder
-  #---------------------------------------------------------------------------------------------------
+  Hd <- (seq.count/(seq.count-1)) * (1-(sum(((hap.freq[,2])/seq.count)^2)))
+  #Total nucleotide diversity and Tajima's D-----------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 8, "of", (fasta.num * 7) + 16, "\r")
   pi.per.nuc <- ((colSums(n.change.matrix) /  (seq.count)^2) / seq.length) * (seq.count/(seq.count-1))
   tpi <- sum(colSums(n.change.matrix)) /  (seq.count) / seq.count  * (seq.count/(seq.count-1))
@@ -313,54 +372,54 @@ vaxpack_input <- function () {
   eone <- cone / aone
   etwo <- ctwo / ((aone^2) + atwo)
   td <- ((tpi) -  (seg.sites.num / aone)) /
-    (sqrt(  (eone*seg.sites.num)  + ( (etwo*seg.sites.num) * (seg.sites.num-1) ) )) #TD for total i.e all fasta files inside folder
-  #---------------------------------------------------------------------------------------------------
-  cat (" Completing Step:", (fasta.num * 7) + 9, "of", (fasta.num * 7) + 16, "\r") #filling up total row from result table option 1
+    (sqrt(  (eone*seg.sites.num)  + ( (etwo*seg.sites.num) * (seg.sites.num-1) ) ))
+  #Adding to total row of results table-----------------------------------------------------------------
+  cat (" Completing Step:", (fasta.num * 7) + 9, "of", (fasta.num * 7) + 16, "\r")
   ndrt[fasta.num + 1, 1]  <- seq.count
   ndrt[fasta.num + 1, 2]  <- seq.length
   ndrt[fasta.num + 1, 3]  <- invalid.site.counter.total
   ndrt[fasta.num + 1, 4]  <- seg.sites.num
-  ndrt[fasta.num + 1, 5]  <- snp.count
-  ndrt[fasta.num + 1, 6]  <- round(pi*1000, 3) #muptiply by 1000 so we can show the value of 10^-3
+  ndrt[fasta.num + 1, 5]  <- total.snp.count
+  ndrt[fasta.num + 1, 6]  <- round(pi*1000, 3)
   ndrt[fasta.num + 1, 7]  <- round(td, 3)
-  ndrt[fasta.num + 1, 8]  <- nsyn.count
-  ndrt[fasta.num + 1, 9]  <- syn.count
+  ndrt[fasta.num + 1, 8]  <- total.nsyn.count
+  ndrt[fasta.num + 1, 9]  <- total.syn.count
   ndrt[fasta.num + 1, 10] <- hap.count
   ndrt[fasta.num + 1, 11] <- round(Hd, 3)
-  #---------------------------------------------------------------------------------------------------
+  #Minor alleles freq for amino acids and then nucleotides----------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 10, "of", (fasta.num * 7) + 16, "\r")
   AAs.each.variable.codon <- matrix(nrow = seq.count, ncol = seg.codons.num)
-  colnames(AAs.each.variable.codon) <- seg.codons #seg.condons = sites of segregation in AA
+  colnames(AAs.each.variable.codon) <- seg.codons
   ref.each.variable.codon <- matrix(nrow = 1, ncol = seg.codons.num)
-  colnames(ref.each.variable.codon) <- seg.codons #for reference seq
+  colnames(ref.each.variable.codon) <- seg.codons
   max.AA.variants <- 0
   for (i in 1:seg.codons.num){
     codon.num <- seg.codons[i]
     refAA <- aalookup[match(paste(ref.matrix[ ,(codon.num*3)-2],
                                   ref.matrix[ ,(codon.num*3)-1],
                                   ref.matrix[ ,(codon.num*3)], sep = ""), aalookup),2]
-    ref.each.variable.codon[ ,i] <- refAA #look at reference sequence, and check
+    ref.each.variable.codon[ ,i] <- refAA
     possible.AA <- aalookup[match(paste(totalpop[ ,(codon.num*3)-2],
                                         totalpop[ ,(codon.num*3)-1],
                                         totalpop[ ,(codon.num*3)], sep = ""), aalookup),2]
-    AAs.each.variable.codon[ ,i] <- possible.AA #extract segregation sites from input fasta and display
+    AAs.each.variable.codon[ ,i] <- possible.AA
     possible.AA.number <- length(unique(c(refAA, possible.AA)))
     if (possible.AA.number > max.AA.variants) max.AA.variants <- possible.AA.number}
   #---------------------------------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 11, "of", (fasta.num * 7) + 16, "\r")
-  did.AA.change <- colSums(sweep(AAs.each.variable.codon, 2, ref.each.variable.codon, FUN = `!=`) + 0) / seq.count #non-ref allele freq
+  did.AA.change <- colSums(sweep(AAs.each.variable.codon, 2, ref.each.variable.codon, FUN = `!=`) + 0) / seq.count
   aa.variant.table <- matrix(nrow = max.AA.variants + 1, ncol = seg.codons.num)
   colnames(aa.variant.table) <- seg.codons
-  aa.variant.table[1, ] <- did.AA.change #change of amino acid
+  aa.variant.table[1, ] <- did.AA.change
   #---------------------------------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 12, "of", (fasta.num * 7) + 16, "\r")
-  maf.AA.table <- matrix(nrow = 22, ncol = dim(aa.variant.table)[2]) #making matrix for AA - table option 3
+  maf.AA.table <- matrix(nrow = 22, ncol = dim(aa.variant.table)[2])
   aalist <- c("I", "L", "V", "F", "M", "C", "A", "G", "P", "T", "S", "Y", "W", "Q", "N", "H", "E", "D", "K", "R", "STOP")
   rownames(maf.AA.table) <- c(aalist, "REF")
-  colnames(maf.AA.table) <- seg.codons #empty ready to put matrix
+  colnames(maf.AA.table) <- seg.codons
   #---------------------------------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 13, "of", (fasta.num * 7) + 16, "\r")
-  seg.codons.ref.variants.matrix <- rbind(ref.each.variable.codon, AAs.each.variable.codon) #puting ref and changes in fasta input into table
+  seg.codons.ref.variants.matrix <- rbind(ref.each.variable.codon, AAs.each.variable.codon)
   for (i in 1:seg.codons.num){
     for (j in 1:max.AA.variants){
       possible.AA <- unique(seg.codons.ref.variants.matrix[ ,i])
@@ -368,10 +427,10 @@ vaxpack_input <- function () {
       aa.variant.table[j+1,i] <- sum(sweep(as.matrix(AAs.each.variable.codon[ ,i]), 2, possible.AA[j], FUN = `==`) + 0)
       maf.AA.table[match(possible.AA[j], aalist),i] <- round(((aa.variant.table[j+1,i]) * 100 / seq.count), 3)
     }
-    maf.AA.table[22,i] <- possible.AA[1] #put respective AA changes into the table
+    maf.AA.table[22,i] <- possible.AA[1]
   }
-  maf.AA.table[is.na(maf.AA.table)] <- 0 #replace NA with zero, and the table is done
-  # the following is to make the same as above but for nucleotide---------------------------------------------------------------------------------------------------
+  maf.AA.table[is.na(maf.AA.table)] <- 0
+  #---------------------------------------------------------------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 14, "of", (fasta.num * 7) + 16, "\r")
   maf.nuc.table <- matrix(nrow = 5, ncol = seg.sites.num)
   possible.nucs <- c("A", "T", "G", "C")
@@ -387,9 +446,8 @@ vaxpack_input <- function () {
   colnames(maf.nuc.table) <- seg.sites
   rownames(maf.nuc.table) <- c(possible.nucs, "REF")
 
-#the following is for adding TD simulation values---------------------------------------------------------------------------------------------------
+#Tajima's D values for graphing (significance thresholds-----------------------------------------------
   cat (" Completing Step:", (fasta.num * 7) + 15, "of", (fasta.num * 7) + 16, "\r")
-# building matrix in R
 td.sim <- matrix(ncol = 9, nrow = 73)
 
 td.sim[ ,1] <- c(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
@@ -450,7 +508,7 @@ td.sim[ ,9] <- c(2.336, 1.913, 2.373, 2.311, 2.524, 2.519, 2.64, 2.649, 2.729, 2
                  3.529, 3.558, 3.581, 3.6, 3.617, 3.632, 3.657, 3.694, 3.722)
 colnames(td.sim) <- c("n", 0.1, 0.1, 0.05, 0.05, 0.01, 0.01, 0.001, 0.001)
 
-# assiging to sensible name and unassinged variables will be removed later on---------------------------------------------------------------------------------------------------
+#Gathering data into tables---------------------------------------------------------------------
 cat (" Completing Step:", (fasta.num * 7) + 16, "of", (fasta.num * 7) + 16, "\r")
   vp.AA.VARIANT.TABLE <- aa.variant.table
   vp.AAs.EACH.VARIABLE.CODON <- AAs.each.variable.codon
@@ -459,7 +517,7 @@ cat (" Completing Step:", (fasta.num * 7) + 16, "of", (fasta.num * 7) + 16, "\r"
   vp.MAF.AA.TABLE <- maf.AA.table
   vp.MAF.NUC.TABLE <- maf.nuc.table
   vp.GLOBAL.SNPS <- globalsnps
-  vp.SEQ.NUM <- seq.count #total samples in fasta files
+  vp.SEQ.NUM <- seq.count
   vp.SEQ.LENGTH <- seq.length
   vp.GENE.NAME <- genename
   vp.SEG.CODONS <- seg.codons
