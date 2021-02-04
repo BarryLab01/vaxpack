@@ -663,8 +663,8 @@ vaxpack_output <- function () {
     if (vp.SEQ.NUM >= 1000) td.sim.for.count <- vp.TD.SIM[73, ]
 
     vp.Combined.Pop.Gen.Stats.Graph <<- ggplot(stacked.sliding.window.stats,
-                                               aes(x = window,
-                                                   y = value,
+                                               aes(x = stacked.sliding.window.stats$window,
+                                                   y = stacked.sliding.window.stats$value,
                                                    col = variable,
                                                    fill = variable), na.rm=TRUE)+
       geom_line(size = 0.7)+
