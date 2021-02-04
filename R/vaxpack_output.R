@@ -663,8 +663,8 @@ vaxpack_output <- function () {
     if (vp.SEQ.NUM >= 1000) td.sim.for.count <- vp.TD.SIM[73, ]
 
     vp.Combined.Pop.Gen.Stats.Graph <<- ggplot(stacked.sliding.window.stats,
-                                               aes(x = stacked.sliding.window.stats$window,
-                                                   y = stacked.sliding.window.stats$value,
+                                               aes(x = window,
+                                                   y = value,
                                                    col = variable,
                                                    fill = variable), na.rm=TRUE)+
       geom_line(size = 0.7)+
@@ -676,12 +676,12 @@ vaxpack_output <- function () {
       scale_x_continuous(breaks = xlabels.values,
                          limits = c(0, (label.jump+50)*6/label.scaler),
                          labels = xlabels)+
-      scale_y_continuous(breaks = c(min(stacked.sliding.window.stats$value),
+      scale_y_continuous(breaks = c(min(value),
                                     -2*TD.scaler, 0, 2*TD.scaler,
-                                    max(stacked.sliding.window.stats$value)),
-                         labels = c(paste(round(min(stacked.sliding.window.stats$value)/TD.scaler, 3)),
+                                    max(value)),
+                         labels = c(paste(round(min(value)/TD.scaler, 3)),
                                     "-2","0", "2",
-                                    paste(round(max(stacked.sliding.window.stats$value)/TD.scaler, 3))),
+                                    paste(round(max(value)/TD.scaler, 3))),
                          sec.axis = sec_axis(~.+0, breaks = (td.sim.for.count[2:9])*TD.scaler,
                                              labels = c("0.1", "0.1",
                                                         "0.05", "0.05",
